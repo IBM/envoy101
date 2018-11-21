@@ -1,0 +1,3 @@
+FROM envoy101-base:latest
+COPY envoy_config.yaml $HOME
+COPY run_demo.sh $HOME

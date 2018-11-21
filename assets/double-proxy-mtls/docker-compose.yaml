@@ -1,0 +1,6 @@
+version: '3'
+services:
+  proxy:
+    image: envoy101-double-proxy-mtls:latest
+    command: ./run_demo.sh &
+    privileged: true

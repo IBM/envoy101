@@ -1,0 +1,101 @@
+---
+static_resources:
+  listeners:
+  - address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 15002
+    listener_filters:
+    - name: envoy.listener.tls_inspector
+      config: {}
+    filter_chains:
+    - filter_chain_match:
+        server_names: "*.wikipedia.org"
+      filters:
+      - name: envoy.tcp_proxy
+        config:
+          stat_prefix: wikipedia
+          access_log:
+          - config:
+              path: "/dev/stdout"
+              format: "[%START_TIME%] %PROTOCOL% %BYTES_RECEIVED% %BYTES_SENT% %RESPONSE_FLAGS%
+                %UPSTREAM_HOST% %UPSTREAM_CLUSTER% %REQUESTED_SERVER_NAME%\n"
+            name: envoy.file_access_log
+          cluster: wikipedia
+    - filter_chain_match:
+        server_names: envoy2.local
+      tlsContext:
+        commonTlsContext:
+          tlsCertificates:
+          - certificateChain:
+              filename: "/etc/my-certs/envoy2.crt"
+            privateKey:
+              filename: "/etc/my-certs/envoy2.key"
+          validationContext:
+            trustedCa:
+              filename: "/etc/my-certs/envoy1.crt"
+          alpnProtocols:
+          - h2
+          - http/1.1
+        requireClientCertificate: true
+      filters:
+      - name: envoy.tcp_proxy
+        config:
+          stat_prefix: envoy2.local
+          access_log:
+          - config:
+              path: "/dev/stdout"
+              format: "[%START_TIME%] %PROTOCOL% %BYTES_RECEIVED% %BYTES_SENT% %RESPONSE_FLAGS%
+                %UPSTREAM_HOST% %UPSTREAM_CLUSTER% %REQUESTED_SERVER_NAME%\n"
+            name: envoy.file_access_log
+          cluster: cnn
+    - filter_chain_match:
+        server_names: "*.cnn.com"
+      tlsContext:
+        commonTlsContext:
+          tlsCertificates:
+          - certificateChain:
+              filename: "/etc/my-certs/envoy2.crt"
+            privateKey:
+              filename: "/etc/my-certs/envoy2.key"
+          validationContext:
+            trustedCa:
+              filename: "/etc/my-certs/envoy1.crt"
+          alpnProtocols:
+          - h2
+          - http/1.1
+        requireClientCertificate: true
+      filters:
+      - name: envoy.tcp_proxy
+        config:
+          stat_prefix: cnn
+          access_log:
+          - config:
+              path: "/dev/stdout"
+            name: envoy.file_access_log
+          cluster: cnn
+  clusters:
+  - name: wikipedia
+    connect_timeout: 2.5s
+    type: strict_dns
+    lb_policy: round_robin
+    hosts:
+    - socket_address:
+        address: www.wikipedia.org
+        port_value: 443
+    dns_lookup_family: v4_only
+  - name: cnn
+    connect_timeout: 2.5s
+    type: strict_dns
+    lb_policy: round_robin
+    hosts:
+    - socket_address:
+        address: edition.cnn.com
+        port_value: 443
+    dns_lookup_family: v4_only
+admin:
+  access_log_path: "/dev/null"
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 8002

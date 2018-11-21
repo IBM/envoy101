@@ -1,0 +1,6 @@
+version: '3'
+services:
+  proxy:
+    image: envoy101-sni-proxy-https:latest
+    command: ./run_envoy.sh &
+    privileged: true

@@ -21,5 +21,8 @@ envoy -c envoy_config1.yaml --v2-config-only &
 envoy -c envoy_config2.yaml --v2-config-only --base-id 2 &
 
 su - clientuser -c "curl -s https://edition.cnn.com | grep -o '<title>.*</title>'"
-su - clientuser -c "curl -s localhost:8002/stats | grep tcp.envoy2.local.downstream_cx_total"
-su - clientuser -c "curl -s localhost:8002/stats | grep tcp.cnn.downstream_cx_total"
+sleep 5
+curl -s localhost:8002/stats | grep tcp.envoy2.local.downstream_cx_total
+sleep 5
+curl -s localhost:8002/stats | grep tcp.cnn.downstream_cx_total
+sleep 5

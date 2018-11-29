@@ -28,12 +28,36 @@ static_resources:
       - name: envoy.tcp_proxy
         config:
           stat_prefix: cnn
-          access_log:
-          - config:
-              path: "/dev/stdout"
-              format: "[%START_TIME%] %PROTOCOL% %BYTES_RECEIVED% %BYTES_SENT% %RESPONSE_FLAGS%
-                %UPSTREAM_HOST% %UPSTREAM_CLUSTER% %REQUESTED_SERVER_NAME%\n"
-            name: envoy.file_access_log
+          access_log: [
+            {
+             "name": "envoy.file_access_log",
+             "config": {
+              "json_format": {
+               "upstream_cluster": "%UPSTREAM_CLUSTER%",
+               "downstream_remote_address": "%DOWNSTREAM_REMOTE_ADDRESS%",
+               "path": "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%",
+               "authority": "%REQ(:AUTHORITY)%",
+               "protocol": "%PROTOCOL%",
+               "upstream_service_time": "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%",
+               "upstream_local_address": "%UPSTREAM_LOCAL_ADDRESS%",
+               "duration": "%DURATION%",
+               "downstream_local_address": "%DOWNSTREAM_LOCAL_ADDRESS%",
+               "user_agent": "%REQ(USER-AGENT)%",
+               "response_code": "%RESPONSE_CODE%",
+               "response_flags": "%RESPONSE_FLAGS%",
+               "start_time": "%START_TIME%",
+               "method": "%START_TIME%",
+               "request_id": "%REQ(X-REQUEST-ID)%",
+               "upstream_host": "%UPSTREAM_HOST%",
+               "x_forwarded_for": "%REQ(X-FORWARDED-FOR)%",
+               "requested_server_name": "%REQUESTED_SERVER_NAME%",
+               "bytes_received": "%BYTES_RECEIVED%",
+               "bytes_sent": "%BYTES_SENT%"
+              },
+              "path": "/dev/stdout"
+             }
+            }
+          ]
           cluster: second_proxy
   - address:
       socket_address:

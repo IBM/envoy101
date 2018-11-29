@@ -27,7 +27,7 @@ for dir in *; do
         if [ -f $dir/Dockerfile ]; then
             docker build --tag ${ENVOY_TAG_PREFIX}${dir}:latest $dir
         else
-            docker build --tag ${ENVOY_TAG_PREFIX}${dir}:latest $dir -f - < base/Dockerfile.derived
+            docker build --tag ${ENVOY_TAG_PREFIX}${dir}:latest $dir -f - < ${dir}/Dockerfile.derived
         fi
     fi
 done

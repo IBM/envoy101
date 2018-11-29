@@ -46,7 +46,7 @@ static_resources:
           - config:
               path: "/dev/stdout"
               format: "[%START_TIME%] %PROTOCOL% %BYTES_RECEIVED% %BYTES_SENT% %RESPONSE_FLAGS%
-                %UPSTREAM_HOST% %UPSTREAM_CLUSTER% %REQUESTED_SERVER_NAME%\n"
+                %UPSTREAM_HOST% %UPSTREAM_CLUSTER% %DOWNSTREAM_REMOTE_ADDRESS% %REQUESTED_SERVER_NAME%\n"
             name: envoy.file_access_log
           cluster: cnn
     - filter_chain_match:

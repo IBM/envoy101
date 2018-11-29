@@ -23,7 +23,6 @@ su - clientuser -c "curl -s https://www.wikipedia.org | grep -o '<title>.*</titl
 su - clientuser -c "curl -s https://de.wikipedia.org/wiki/Wikipedia:Hauptseite | grep -o '<title>.*</title>'"
 sleep 5
 curl -s localhost:8001/stats | grep cluster.wikipedia.upstream_cx_total
-curl -s localhost:8001/stats
 su - clientuser -c "curl -s https://developer.ibm.com | grep -o '<title>.*</title>'"
 sleep 5
 curl -s localhost:8001/stats | grep cluster.ibm.upstream_cx_total
